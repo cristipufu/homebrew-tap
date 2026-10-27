@@ -1,0 +1,52 @@
+name: Update Strata
+
+on:
+  schedule:
+    - cron: "23 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-strata
+  cancel-in-progress: false
+
+jobs:
+  update:
+    if: github.repository == 'cristipufu/homebrew-tap' && github.ref == 'refs/heads/main'
+    runs-on: macos-26
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Test release validation
+        run: python3 -m unittest discover -s tests
+      - name: Read and verify the latest stable release
+        id: update
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python3 scripts/update-strata.py
+          if ! git diff --quiet -- Casks/strata.rb; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+      # Pushes made with GITHUB_TOKEN do not start the Check Strata workflow.
+      # Perform those same checks here before publishing an automatic update.
+      - name: Check installation and uninstallation
+        if: steps.update.outputs.changed == 'true'
+        run: bash scripts/check-strata.sh
+      - name: Publish the verified cask update
+        if: steps.update.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh auth setup-git
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add Casks/strata.rb
+          git commit -m 'Strata: update to the latest stable release'
+          git push origin HEAD:main
