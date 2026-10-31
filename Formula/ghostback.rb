@@ -5,6 +5,11 @@ class Ghostback < Formula
   sha256 "a19cdfc3db7ccf858340ad610e6d52d54d8147440f2720aa113b83ab22eff3bf"
   license "MIT"
 
+  bottle do
+    root_url "https://github.com/cristipufu/homebrew-tap/releases/download/ghostback-v0.1.0"
+    sha256 cellar: :any_skip_relocation, arm64_tahoe: "08330bfa07dc388d9721c09caeea63351ee71c14a3bca7ab91a55aa34449753c"
+  end
+
   depends_on "rust" => :build
   depends_on :macos
 
