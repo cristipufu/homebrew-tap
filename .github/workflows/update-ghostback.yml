@@ -1,0 +1,52 @@
+name: Update Ghostback
+on:
+  schedule:
+    - cron: "41 * * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: update-ghostback
+  cancel-in-progress: false
+jobs:
+  update:
+    if: github.repository == 'cristipufu/homebrew-tap' && github.ref == 'refs/heads/main'
+    runs-on: macos-26
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Test release validation
+        run: ruby tests/test_update_ghostback.rb
+      - name: Check the latest stable Ghostback release
+        id: update
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: ruby scripts/update-ghostback.rb
+      - name: Build and test the formula and bottle
+        if: steps.update.outputs.changed == 'true'
+        run: bash scripts/check-ghostback.sh --bottle
+      - name: Publish verified bottle and formula
+        if: steps.update.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.update.outputs.version }}
+        run: |
+          set -euo pipefail
+          tag="ghostback-v$VERSION"
+          if ! gh release view "$tag" >/dev/null 2>&1; then
+            gh release create "$tag" --title "Ghostback $VERSION bottles" --notes "Homebrew-built Ghostback bottles. Source: https://github.com/cristipufu/ghostback/releases/tag/v$VERSION" --latest=false
+          fi
+          # Homebrew URL filenames use a single dash; local filenames can use two.
+          for artifact in bottles/*.bottle.tar.gz; do
+            case "$artifact" in *ghostback--*) continue ;; esac
+            gh release upload "$tag" "$artifact"
+          done
+          gh auth setup-git
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add Formula/ghostback.rb
+          git commit -m "Ghostback: publish $VERSION with verified bottles"
+          git pull --rebase origin main
+          git push origin HEAD:main

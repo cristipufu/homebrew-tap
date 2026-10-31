@@ -6,6 +6,7 @@ Each package points to the releases in its own upstream repository.
 | Package | Description | Upstream |
 | --- | --- | --- |
 | `strata` | Native macOS file manager | [cristipufu/strata-files](https://github.com/cristipufu/strata-files) |
+| `ghostback` | Automatic coding-agent session recovery for Ghostty | [cristipufu/ghostback](https://github.com/cristipufu/ghostback) |
 
 ## Install Strata
 
@@ -27,6 +28,42 @@ brew install --cask strata
 
 If you already installed Strata manually, Homebrew refuses to overwrite it. An identical copy of the same release
 can be adopted with `brew install --cask --adopt cristipufu/tap/strata`.
+
+## Install Ghostback
+
+```sh
+brew install cristipufu/tap/ghostback
+ghostback setup --dry-run
+ghostback setup
+```
+
+Requires macOS, Ghostty 1.4+, and zsh or bash. The current prebuilt bottle targets
+Apple Silicon on macOS 26 (Tahoe); other configurations build from source with
+Homebrew's build dependencies. The bottle needs no Rust runtime or compiler.
+
+Setup is an explicit account-level step: it installs shell/agent hooks and the
+login helper. Open a new Ghostty tab afterward and allow Automation access if
+prompted. Check capture with `ghostback status`.
+
+Ghostback uses Homebrew's stable executable path and picks up upgrades:
+
+```sh
+brew update
+brew upgrade ghostback
+```
+
+Remove account integration before uninstalling the formula:
+
+```sh
+ghostback uninstall
+brew uninstall ghostback
+```
+
+Saved sessions are retained. The **Update Ghostback** workflow checks upstream
+stable releases hourly and can be run manually. It builds from checksummed source,
+tests setup/uninstall with a disposable HOME, builds and tests a Homebrew bottle,
+and publishes the bottle and formula update. It uses this tap's `GITHUB_TOKEN`;
+no Apple signing credentials or cross-repository token are needed.
 
 ## Updates
 
