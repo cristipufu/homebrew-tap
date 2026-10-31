@@ -47,7 +47,10 @@ class Ghostback < Formula
 
   test do
     assert_match version.to_s, shell_output("#{bin}/ghostback --version")
-    %w[ZDOTDIR XDG_CONFIG_HOME CODEX_HOME CLAUDE_CONFIG_DIR GROK_HOME PI_CODING_AGENT_DIR OPENCODE_CONFIG_DIR OPENCODE_TUI_CONFIG].each { |key| ENV.delete(key) }
+    %w[
+      ZDOTDIR XDG_CONFIG_HOME CODEX_HOME CLAUDE_CONFIG_DIR GROK_HOME
+      PI_CODING_AGENT_DIR OPENCODE_CONFIG_DIR OPENCODE_TUI_CONFIG
+    ].each { |key| ENV.delete(key) }
     system bin/"ghostback", "--state-dir", testpath/"state", "setup", "--dry-run", "--no-launch"
     refute_path_exists testpath/"state"
   end

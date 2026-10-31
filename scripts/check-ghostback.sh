@@ -27,6 +27,7 @@ fi
 fixture=$(mktemp -d "${RUNNER_TEMP:?}/ghostback-account.XXXXXX")
 run_fixture() {
   env HOME="$fixture" ZDOTDIR="" XDG_CONFIG_HOME="" CODEX_HOME="" CLAUDE_CONFIG_DIR="" GROK_HOME="" \
+    PI_CODING_AGENT_DIR="" OPENCODE_CONFIG_DIR="" OPENCODE_TUI_CONFIG="" \
     "$binary" --state-dir "$fixture/state" "$@"
 }
 run_fixture setup --no-launch
