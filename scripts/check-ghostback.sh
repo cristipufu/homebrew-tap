@@ -46,8 +46,12 @@ if [[ ${1:-} == --bottle ]]; then
     brew bottle --merge --write --no-commit ./*.bottle.json
     brew style --fix --formula "$formula"
     brew uninstall "$formula"
-    brew install --force-bottle ./*.bottle.tar.gz
+    cache=$(brew --cache --force-bottle "$formula")
+    mkdir -p "$(dirname "$cache")"
+    cp ./*.bottle.tar.gz "$cache"
+    brew install --force-bottle "$formula"
     brew test "$formula"
+    brew info --json=v2 "$formula" | ruby -rjson -e 'abort "not installed from bottle" unless JSON.parse(STDIN.read).fetch("formulae").first.fetch("installed").first.fetch("poured_from_bottle")'
     ruby -rjson -rfileutils -e 'Dir["*.bottle.json"].each { |f| JSON.parse(File.read(f)).each_value { |v| v.fetch("bottle").fetch("tags").each_value { |t| FileUtils.cp(t.fetch("local_filename"), t.fetch("filename")) unless t.fetch("local_filename")==t.fetch("filename") } } }'
   )
 fi
