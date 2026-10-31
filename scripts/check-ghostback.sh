@@ -46,6 +46,8 @@ if [[ ${1:-} == --bottle ]]; then
     brew bottle --json --root-url "https://github.com/cristipufu/homebrew-tap/releases/download/ghostback-v$version" "$formula"
     brew bottle --merge --write --no-commit ./*.bottle.json
     brew style --fix --formula "$formula"
+    # Bottle merging changes the formula fingerprint; trust our verified generated formula.
+    if brew command trust >/dev/null 2>&1; then brew trust --formula "$formula"; fi
     brew uninstall "$formula"
     cache=$(brew --cache --force-bottle "$formula")
     mkdir -p "$(dirname "$cache")"
