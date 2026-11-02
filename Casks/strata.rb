@@ -1,6 +1,6 @@
 cask "strata" do
-  version "0.7.5"
-  sha256 "58bee5e85a9ab019808bc839a2f21c777f3a36df1decac7a94917d75edb0238f"
+  version "0.8.0"
+  sha256 "16b0595618dfd6272b40e0e20e8192d27950d2d8a2af96428c13407e54565f34"
 
   url "https://github.com/cristipufu/strata-files/releases/download/v#{version}/Strata.dmg"
   name "Strata Files"
