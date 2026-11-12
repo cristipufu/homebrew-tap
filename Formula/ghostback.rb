@@ -1,13 +1,13 @@
 class Ghostback < Formula
   desc "Recover coding-agent conversations in native Ghostty terminals"
   homepage "https://github.com/cristipufu/ghostback"
-  url "https://github.com/cristipufu/ghostback/archive/refs/tags/v0.3.0.tar.gz"
-  sha256 "58b1e4109707ea4f4675405a6b33b182b585d6d3069ba6e809ed029022fb088b"
+  url "https://github.com/cristipufu/ghostback/archive/refs/tags/v0.3.1.tar.gz"
+  sha256 "58524520e771cb50f3ae7abdcf5a750713ed62f85025d6d392d6946c4b9a357a"
   license "MIT"
 
   bottle do
-    root_url "https://github.com/cristipufu/homebrew-tap/releases/download/ghostback-v0.3.0"
-    sha256 cellar: :any_skip_relocation, arm64_tahoe: "5a24cb613b340c8828a75be364991d64cc8d3d3b1534506cdc754ffc4cefc8ae"
+    root_url "https://github.com/cristipufu/homebrew-tap/releases/download/ghostback-v0.3.1"
+    sha256 cellar: :any_skip_relocation, arm64_tahoe: "52a003c31213b6894a001e678d6a3946bd225ae936b8b737ca6b6f4ac18a794e"
   end
 
   depends_on "rust" => :build
